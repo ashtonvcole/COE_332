@@ -1,6 +1,8 @@
-import names
+# Ashton Cole AVC687
+# COE 332: Homework 1
 
-# Exercise 1
+# EXERCISE 1
+
 longest_words = []
 with open('words', 'r') as f:
     for line in f:
@@ -13,21 +15,6 @@ with open('words', 'r') as f:
                 if len(longest_words[i]) < len(word):
                     longest_words[i] = word
                     break
-print('Exercise 1')
 longest_words.sort(key = len, reverse = True)
 for j in range(len(longest_words)):
     print(longest_words[j])
-
-# Exercise 2
-print('Exercise 2')
-count = 0
-max = 5
-while True:
-    if count >= max:
-        break
-    name = names.get_full_name()
-    if len(name) == 9:
-        print(name)
-        count = count + 1
-
-# Exercise 3
