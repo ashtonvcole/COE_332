@@ -8,6 +8,11 @@ This project requires Python 3 to run. First, you may execute [`generate_sites.p
 
 ## Project Structure
 
+This project consists of 2 executable Python files.
+
+- [`generate_sites.py`](generate_sites.py)
+- [`calculate_trip.py`](calculate_trip.py)
+
 ### [`generate_sites.py`](generate_sites.py)
 
 This script generates 5 random sites for the scenario to a `sites.json` file. Each site has an `index`, a `latitude` from 16 deg N to 18 deg N, a `longitude` from 82 deg E to 84 deg E, and a composition of `stony`, `iron`, or `stony-iron`. Refer to the sample below for an example output.
@@ -49,9 +54,9 @@ This script generates 5 random sites for the scenario to a `sites.json` file. Ea
 }
 ```
 
-## [`calculate_trip.py`](calculate_trip.py)
+### [`calculate_trip.py`](calculate_trip.py)
 
-This script calculates the travel time for any valid JSON file in the format described above. It uses the [haversine formula](https://en.wikipedia.org/wiki/Haversine_formula) with a Martian radius of 3389.5 km to calculate the great circle distance between each point. The rover starts at 16 deg N, 82 deg E, and then travels to each site in the order in which they are presented in the file at a constant velocity of 10 km/hr. Each stop requires a varying amount of time, with `stony` sites taking 1 hr, `iron` sites taking 2 hr, and `stony-iron` sites taking 3 hr. These times are calculated and printed to the console. The example below uses the same data as above.
+This script calculates the travel time for any valid JSON file with the name and format described above. It uses the [haversine formula](https://en.wikipedia.org/wiki/Haversine_formula) with a Martian radius of 3389.5 km to calculate the great circle distance between each point. The rover starts at 16 deg N, 82 deg E, and then travels to each site in the order in which they are presented in the file at a constant velocity of 10 km/hr. Each stop requires a varying amount of time, with `stony` sites taking 1 hr, `iron` sites taking 2 hr, and `stony-iron` sites taking 3 hr. These times are calculated and printed to the console. The example below uses the same data as above.
 
 ```
 leg = 1, time to travel = 10.81 hr, time to sample = 1.00 hr
