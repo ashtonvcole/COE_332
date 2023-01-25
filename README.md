@@ -1,3 +1,8 @@
 # COE 332 Repository
 
-Hello there! This is where I keep homework assignments from COE 332: Software Engineering and Design. Fun stuff!
+This is where I keep homework assignments from COE 332: Software Engineering and Design.
+
+## Directory
+
+- [homework01](homework01) a few scripts demonstrating basic Python knowledge working with loops and if statements
+- [homework02](homework02) a hypothetical Mars rover travel time estimator demonstrating basic proficiency of using Python in tandem with JSON
