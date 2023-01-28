@@ -4,7 +4,7 @@ This assignment deals with estimating a hypothetical Martian rover's travel time
 
 ## Running the Project
 
-This project requires Python 3 to run. First, you may execute [`generate_sites.py`](generate_sites.py) to generate a `sites.json` file with random sample data. Then, you may execute [`calculate_distances.py`](calculate_distances.py), which will calculate travel times and output them to the console.
+This project requires Python 3 to run. You may change the permissions of the scripts to make them executable, or use the `python3` command. First, you may run [`generate_sites.py`](generate_sites.py) to generate a `sites.json` file with random sample data. Then, you may run [`calculate_distances.py`](calculate_distances.py), which will calculate travel times and output them to the console.
 
 ## Project Structure
 
