@@ -1,12 +1,18 @@
 #!/usr/bin/env python3
 
+
+
 import requests
 import json
 import math
 
+
+
 # Constants
 turbidity_safe = 1.0 # threshold for safe water in NTU
 decay_factor = 0.02 # decay rate per hour
+
+
 
 def turbidity_of(a0: float, I90: float) -> float:
     """Calculates the turbidity of a given sample.
@@ -29,6 +35,8 @@ def turbidity_of(a0: float, I90: float) -> float:
     """
     return a0 * abs(I90)
 
+
+
 def turbidity_min_time(Ts: float, T0: float, d: float) -> float:
     """Calculates the minimum time for turbid water to be safe.
 
@@ -48,7 +56,12 @@ def turbidity_min_time(Ts: float, T0: float, d: float) -> float:
     Returns:
         The minimum time to reach the safe threshold, in hours.
     """
+    if Ts >= T0:
+        # Don't return a negative time--it's already safe
+        return 0
     return math.log(Ts / T0) / math.log(1 - d)
+
+
 
 def main():
     response = requests.get(url = 'https://raw.githubusercontent.com/wjallen/turbidity/main/turbidity_data.json')
@@ -76,6 +89,8 @@ def main():
     else:
         print('Info: Turbidity is below threshold for safe use')
         print('Minimum time required to return to a safe threshold: 0 hours')
+
+
 
 if __name__ == "__main__":
     main()
