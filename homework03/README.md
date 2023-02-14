@@ -15,7 +15,7 @@ The project consists of two separately executable Python files.
 
 ### [`analyze_water.py`](analyze_water.py)
 
-This script accesses the [turbidity JSON data](https://raw.githubusercontent.com/wjallen/turbidity/main/turbidity_data.json) with a HTTP GET request and filters the 5 most recent entries. It takes the `calibration_constant` and `detector_current` to calculate an average turbidity of the water. From this, it uses an exponential decay model with a decay rate of 2% and a maximum safe turbidity threshold of 1 to estimate the minimum time it takes for the turbidity to become safe. If the initial turbidity is above the threshold, it will produce output like the following.
+This script accesses the [turbidity JSON data](https://raw.githubusercontent.com/wjallen/turbidity/main/turbidity_data.json) with a HTTP GET request and filters the 5 most recent entries. It takes the `calibration_constant` and the magnitude of the `detector_current` to calculate an average turbidity of the water. From this, it uses an exponential decay model with a decay rate of 2% and a maximum safe turbidity threshold of 1 to estimate the minimum time it takes for the turbidity to become safe. If the initial turbidity is above the threshold, it will produce output like the following.
 
 ```
 Average turbidity based on most recent five measurements: 1.1246
