@@ -1,7 +1,8 @@
+#!/usr/bin/env python3
+
 from flask import Flask
 import requests
 import xmltodict
-import math
 
 
 
@@ -115,9 +116,9 @@ def epochs_speed(epoch):
     data = get_data()
     for item in data['ndm']['oem']['body']['segment']['data']['stateVector']:
         if item['EPOCH'] == epoch:
-            return {'speed' : math.sqrt(float(item['X_DOT']['#text']) ** 2 + \
+            return {'speed' : (float(item['X_DOT']['#text']) ** 2 + \
                     float(item['Y_DOT']['#text']) ** 2 + \
-                    float(item['Z_DOT']['#text']) ** 2), \
+                    float(item['Z_DOT']['#text']) ** 2) ** 0.5, \
                     'units' : item['X_DOT']['@units']}
     else: # No matching epoch
         return f'Epoch {epoch} not found', 404
@@ -125,4 +126,4 @@ def epochs_speed(epoch):
 
 
 if __name__ == '__main__':
-    app.rin(debug = True, host = '0.0.0.0')
+    app.run(debug = True, host = '0.0.0.0')
