@@ -12,9 +12,9 @@ This project requires Python 3 to run. It also requires a stable internet connec
 
 The project consists of a single Python file.
 
-- `iss_tracker.py` [About](#iss_trackerpy-iss_tracker) [File](iss_tracker.py)
+- `iss_tracker.py` [About](#iss_trackerpy) [File](iss_tracker.py)
 
-### [`iss_tracker.py`](iss_tracker.py) {#iss_tracker}
+### [`iss_tracker.py`](iss_tracker.py)
 
 This script processes all HTTP requests to the API. In addition to code that initializes the server, it contains several functions which execute and return data for a certain endpoint.
 
