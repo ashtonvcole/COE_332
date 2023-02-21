@@ -6,7 +6,7 @@ This assignment is important, because it demonstrates how Python, a relatively s
 
 ## Running the Project
 
-This project requires Python 3 to run. It also requires a stable internet connection and the modules 'requests` and `xmltodict`. The server can be started by changing the permissions of [`iss_tracker.py`](iss_tracker.py) to make it executable, or running it with the `python3` command. Alternatively, it can be run with the command `flask --app iss_tracker --debug run`. All put the server in debug mode. From another terminal window, you may usse the `curl` command to make HTTP requests.
+This project requires Python 3 to run. It also requires a stable internet connection and the modules `requests` and `xmltodict`. The server can be started by changing the permissions of [`iss_tracker.py`](iss_tracker.py) to make it executable, or running it with the `python3` command. Alternatively, it can be run with the command `flask --app iss_tracker --debug run`. All put the server in debug mode. From another terminal window, you may usse the `curl` command to make HTTP requests.
 
 ## Project Structure
 
