@@ -97,7 +97,7 @@ curl localhost:5000/
 
 ### `/epochs`
 
-This returns a list of all epochs in JSON format. This is the time associated witha data point. They are in the form `YYYY-DDDTHH:MM:SS.000Z`.
+This returns a list of all epochs in JSON format. This is the time associated with a data point. They are in the form `YYYY-DDDTHH:MM:SS.000Z`.
 
 ```bash
 curl localhost:5000/epochs
