@@ -25,7 +25,7 @@ The first path should correspond to a user-created directory relative to the YAM
 docker-compose up -f
 ```
 
-The `-d  tag runs these tasks in the background. If there is a Dockerfile and application source file in the directory, the container will be re-built with this command. Once you are done running the containers, you may stop and remove them with another one-liner.
+The `-d`  tag runs these tasks in the background. If there is a Dockerfile and application source file in the directory, the container will be re-built with this command. Once you are done running the containers, you may stop and remove them with another one-liner.
 
 ```bash
 docker-compose down
