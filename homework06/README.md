@@ -33,7 +33,7 @@ docker-compose down
 
 ### Running without `docker-compose`
 
-Without `docker-compose`, the containers must be run manually. If you are not using the provided application image, you must build it with `docker build `. First, start the Redis container.
+Without `docker-compose`, the containers must be run manually. If you are not using the provided application image, you must build it with `docker build`. First, start the Redis container.
 
 ```bash
 docker run -d -p 6379:6379 -v $(pwd)/data:/data:rw redis:7 --save 1 1
