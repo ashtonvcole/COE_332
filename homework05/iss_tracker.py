@@ -45,7 +45,7 @@ def all() -> dict:
     """
     global data
     if data == None:
-        return f'Empty data set', 404
+        return f'Empty data set\n', 404
     return data
 
 
@@ -67,14 +67,14 @@ def epochs() -> list:
     """
     global data
     if data == None:
-        return f'Empty data set', 404
+        return f'Empty data set\n', 404
     limit = request.args.get('limit', len(data['ndm']['oem']['body']['segment']['data']['stateVector']))
     offset = request.args.get('offset', 0)
     try:
         limit = int(limit)
         offset = int(offset)
     except:
-        return f'Parameters limit and offset must be integers', 404
+        return f'Parameters limit and offset must be integers\n', 404
     epochs = []
     i = 0
     count = 0
@@ -110,12 +110,12 @@ def epochs_state(epoch: str) -> dict:
     """
     global data
     if data == None:
-        return f'Empty data set', 404
+        return f'Empty data set\n', 404
     for item in data['ndm']['oem']['body']['segment']['data']['stateVector']:
         if item['EPOCH'] == epoch:
             return item
     else: # No matching epoch
-        return f'Epoch {epoch} not found', 404
+        return f'Epoch {epoch} not found\n', 404
 
 
 
@@ -143,7 +143,7 @@ def epochs_speed(epoch: str) -> dict:
     """
     global data
     if data == None:
-        return f'Empty data set', 404
+        return f'Empty data set\n', 404
     for item in data['ndm']['oem']['body']['segment']['data']['stateVector']:
         if item['EPOCH'] == epoch:
             return {'speed' : (float(item['X_DOT']['#text']) ** 2 + \
@@ -151,7 +151,7 @@ def epochs_speed(epoch: str) -> dict:
                     float(item['Z_DOT']['#text']) ** 2) ** 0.5, \
                     'units' : item['X_DOT']['@units']}
     else: # No matching epoch
-        return f'Epoch {epoch} not found', 404
+        return f'Epoch {epoch} not found\n', 404
 
 
 
@@ -169,7 +169,7 @@ def delete_data() -> str:
     """
     global data
     data = None
-    return 'Data deleted from instance'
+    return 'Data deleted from instance\n'
 
 @app.route('/post-data', methods = ['POST'])
 def post_data() -> None:
@@ -189,7 +189,7 @@ def post_data() -> None:
     """
     global data
     data = get_data()
-    return 'Data refreshed'
+    return 'Data refreshed\n'
 
 
 
@@ -218,7 +218,7 @@ def help() -> str:
             '\t\tspeed for an epoch in JSON form. Returns a string\n' + \
             '\t\terror message with a 404 status if no such record.\n' + \
             '\t/delete-data DETETE Clear all data in the instance.\n' + \
-            '\t/post-data POST Update and overwrite all data.'
+            '\t/post-data POST Update and overwrite all data.\n'
 
 
 
