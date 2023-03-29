@@ -9,3 +9,4 @@ This is where I keep homework assignments from COE 332: Software Engineering and
 - [homework03](homework03) a turbidity calculator which demonstrates making HTTP GET requests and writing unit tests
 - [homework04](homework04) a live ISS data retriever which demonstrates running a locally hosted Flask API microservice as an intermediary to access and process 3rd-party data
 - [homework05](homework05) an extension upon the prior, with support for creating a Docker image
+- [homework06](homework06) a simple intermediary API for a genetic database demonstrating all of the above, while adding Redis and volume mounting for persistent data
