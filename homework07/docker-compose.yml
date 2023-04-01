@@ -15,6 +15,6 @@ services:
             dockerfile: ./Dockerfile
         depends_on:
             - redis-db
-        image: ashtonvcole/genome_database:hw06
+        image: ashtonvcole/genome_database:hw07
         ports:
             - 5000:5000
