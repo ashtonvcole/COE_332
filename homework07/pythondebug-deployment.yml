@@ -1,0 +1,26 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+        name: ashtonc-test-pythondebug-deployment
+        labels:
+                username: ashtonc
+                env: test
+                app: ashtonc-test-pythondebug-app
+spec:
+        replicas: 1
+        selector:
+                matchLabels:
+                        app: ashtonc-test-pythondebug-app
+        template:
+                metadata:
+                        labels:
+                                username: ashtonc
+                                env: test
+                                app: ashtonc-test-pythondebug-app
+                spec:
+                        containers:
+                                - name: ashtonc-test-pythondebug-container
+                                  image: python:3.8.10
+                                  imagePullPolicy: Always
+                                  command: ['sleep', '9999999']
