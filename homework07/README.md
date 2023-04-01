@@ -1,73 +1,111 @@
-# Human Genome API
+# Human Genome API, now with Kubernetes!
 
-This project creates a simple, containerized, locally-hosted Flask API to process HTTP requests for human genome data. [More details](https://www.genenames.org/download/archive/) and the [source data](https://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/json/hgnc_complete_set.json) can be found via the HUGO Gene Nomenclature Committee website. The application pulls the data from the web and stores it in a Docker-containerized Redis database for queries, which is periodically saved to a local folder via a volume mount. This means that application data persists even if the application is stopped or, in the worst case, crashes.
+This project creates a simple, containerized, Kubernetes-deployed Flask API to process HTTP requests for human genome data. [More details](https://www.genenames.org/download/archive/) and the [source data](https://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/json/hgnc_complete_set.json) can be found via the HUGO Gene Nomenclature Committee website. The application pulls the data from the web and stores it in a Kubernetes/Docker-containerized Redis database for queries, which is periodically saved to a persistent volume claim via a volume mount. This means that application data persists even if the application is stopped or, in the worst case, crashes.
 
-This assignment is important because it synthesizes several software engineering concepts. It uses a Python-based Flask server to request a large data set from the web, save it, and manipulate it based on clients' requests. It also uses a popular database system Redis to store data, sequestered within a Docker container. The application itself is intended to be run in another container, decoupling the components and providing consistency and ease-of-use across platforms. These containers can be efficiently started together with a single `docker-compose` command! It also has value from a user perspective, since instead of receiving a complicated XML file of the whole data set, a user can request only what they need, and receive it in JSON.
+This assignment is important because it synthesizes several software engineering concepts. Extending beyond all of the value in the previous assignment, it uses Kubernetes to orchestrate the deployment of containers. Unlike before, there can be deployments of multiple copies of a container which tag-team to accommodate high request loads. If a container fails or is deleted, the deployment quickly replaces it with a new one, optionally with the most up-to-date image. Finally, the data itself is put into its own persistent volume claim to further containerize it.
 
 ## Running the Project
 
-It is highly recommended to run the project with `docker-compose` applied to images pulled from [Docker Hub](https://hub.docker.com/repository/docker/ashtonvcole/genome_database/). The user is welcome to pull the source code from GitHub and build their own containers and images, or run the Flask application outside a container with a Python 3 interpreter, but no guarantees are made.
+It is recommended to run the project from images pulled from [Docker Hub](https://hub.docker.com/repository/docker/ashtonvcole/genome_database/). The user is also welcome to build their own images. For alternative, non-Kubernetes methods, see [Homework 6](../homework06).
 
-Regardless, an essential, albeit inconvenient step is to personally create a folder on the machine to save Redis data between container runs. When Redis tries to create its own folder, the permissions are ill-set, locking the client out and preventing data from being saved.
-
-### Running with `docker-compose`
-
-For this method, only the Docker images and `docker-compose.yml` are necessary. The user should check that the volume mount specification is set appropriately.
-
-```yml
-volumes:
-    - ./data:/data
-```
-
-The first path should correspond to a user-created directory relative to the YAML file. With that, the images can be deployed as containers with a single line.
+Regardless of how the images are obtained, they can be implemented with a single command.
 
 ```bash
-docker-compose up -f
+kubectl apply \
+-f gdb-rd-pvc.yml \
+-f gdb-rd-deployment.yml \
+-f gdb-rd-service.yml \
+-f gdb-flask-deployment.yml \
+-f gdb-flask-service.yml \
+-f pythondebug-deployment.yml
 ```
 
-The `-d`  tag runs these tasks in the background. If there is a Dockerfile and application source file in the directory, the container will be re-built with this command. Once you are done running the containers, you may stop and remove them with another one-liner.
+This instructs Kubernetes to create the containers, services, and persistent volume claim for the Flask and Redis applicatons. More details on this are in [Project Structure](#project-structure).
+
+As-is, the service IP addresses are not necessarily public. This means that you may not be able to access the API directly from your machine, even if you identify the service IP address. To test the API, you may enter a `pythondebug-deployment` pod. First find the name of the active pod.
 
 ```bash
-docker-compose down
+kubectl get pods --selector=app=ashtonc-test-pythondebug-app
 ```
 
-### Running without `docker-compose`
+```
+NAME                                                   READY   STATUS    RESTARTS   AGE
+ashtonc-test-pythondebug-deployment-7c77fbc6b4-vb8tz   1/1     Running   0          6m11s
+```
 
-Without `docker-compose`, the containers must be run manually. If you are not using the provided application image, you must build it with `docker build`. First, start the Redis container.
+Enter this pod and run a bash shell.
+
+```
+kubectl exec -it ashtonc-test-pythondebug-deployment-7c77fbc6b4-vb8tz -- /bin/bash
+```
+
+From here, you can access the Flask service by curling to the Flask service's name, specified in its YAML file, through the standard port 5000.
+
+```
+curl 'http://ashtonc-test-gdb-flask-service:5000/data' -X GET
+```
+
+Note that to get a non-empty result from the above, you must call the appropriate endpoint and HTTP method.
+
+To update either the Flask or Redis applications from a new image, simply delete the respective pods. Since the image pull policies are set to always, the new pods which are restarted will have the updates. For example, the following deletes the Flask pods.
 
 ```bash
-docker run -d -p 6379:6379 -v $(pwd)/data:/data:rw redis:7 --save 1 1
+kubectl delete pods --selector=app=ashtonc-test-gdb-flask-app
 ```
 
-This runs the container in the background, binds its port 6379 to that of the machine, sets up a volume mount in the present directory, and saves data periodically.
-
-Then, start the application container.
+To stop the project, you must delete the services, deployments, and persistent volume claims.
 
 ```bash
-docker run -d -p 5000:5000
+kubectl delete deployment ashtonc-test-pythondebug-deployment; \
+kubectl delete service ashtonc-test-gdb-flask-service; \
+kubectl delete deployment ashtonc-test-gdb-flask-deployment; \
+kubectl delete service ashtonc-test-gdb-rd-service; \
+kubectl delete deployment ashtonc-test-gdb-rd-deployment; \
+kubectl delete pvc ashtonc-test-gdb-rd-pvc
 ```
-
-This runs the container in the background and binds its port 5000 to that of the machine.
-
-You may also interpret the application with Python 3, but this is the least recommended, since it prevents version control and sequestering.
 
 ## Project Structure
 
 - `Dockerfile` [About](#dockerfile) [File](Dockerfile)
-- `docker-compose.yml` [About](#docker-composeyml) [File](docker-compose.yml)
 - `genome_database.py` [About](#genome_databasepy) [File](genome_database.py)
+- `gdb-rd-pvc.yml` [About](#gdb-rd-pvcyml) [File](gdb-rd-pvc.yml)
+- `gdb-rd-deployment.yml` [About](#gdb-rd-deploymentyml) [File](gdb-rd-deployment.yml)
+- `gdb-rd-service.yml` [About](#gdb-rd-serviceyml) [File](gdb-rd-service.yml)
+- `gdb-flask-deployment.yml` [About](#gdb-flask-deploymentyml) [File](gdb-flask-deployment.yml)
+- `gdb-flask-service.yml` [About](#gdb-flask-serviceyml) [File](gdb-flask-service.yml)
+- `pythondebug-deployment.yml` [About](#gdb-flask-deploymentyml) [File](pythondebug-deployment.yml)
 
 ### `Dockerfile`
 
 This script is used to build a Docker image, which can excecute the program within a container.
 
-### `docker-compose.yml`
-
-This script is used to optionally build and pull the necessary Docker images, and then run containers from them.
-
 ### `genome_database.py`
 
 This script processes all HTTP requests to the API. In addition to code that initializes the server, it contains several functions which execute and return data for a certain endpoint.
+
+### `gdb-rd-pvc.yml`
+
+This defines the `ashtonc-test-gdb-rd-pvc` `PersistentVolumeClaim` object. It sets up a persistent volume claim which saves the data from the Redis application.
+
+### `gdb-rd-deployment.yml`
+
+This defines the `ashtonc-test-gdb-rd-deployment` `Deployment` object. It sets up a single pod which has a Docker container of Redis. This pod has the selector `app=ashtonc-test-gdb-rd-app`.
+
+### `gdb-rd-service.yml`
+
+This defines the `ashtonc-test-gdb-rd-service` `Service` object. It sets up a Cluster IP service with a fixed IP address which routes HTTP requests to the `ashtonc-test-gdb-rd-deployment` pod via port 6379. This service has an alias for its IP address `ashtonc-test-gdb-rd-service` and the selector `app=ashtonc-test-gdb-rd-app`.
+
+### `gdb-flask-deployment.yml`
+
+This defines the `ashtonc-test-gdb-flask-deployment` `Deployment` object. It sets up two pods which have Docker containers of the Python Flask application. This pod has the selector `app=ashtonc-test-gdb-flask-app`.
+
+### `gdb-flask-service.yml`
+
+This defines the `ashtonc-test-gdb-flask-service` `Service` object. It sets up a Cluster IP service with a fixed IP address which routes HTTP requests to `ashtonc-test-gdb-flask-deployment` pods via port 5000. This service has an alias for its IP address `ashtonc-test-gdb-flask-service` and the selector `app=ashtonc-test-gdb-flask-app`.
+
+### `pythondebug-deployment.yml`
+
+This defines the `ashtonc-test-pythondebug-deployment` `Deployment` object. It sets up a single pod which has a Docker container of Python 3.8.10. This pod has the selector `app=ashtonc-test-pythondebug-app`. This pod is not strictly necessary, but it is helpful for debugging, both with bash `curl`-based and Python-based HTTP requests.
 
 ## Endpoints
 
@@ -84,7 +122,7 @@ The following endpoints are available to the user. Note that all endpoints, give
 This pulls the source data from online and adds it to the Redis database.
 
 ```bash
-curl 'http://localhost:5000/data' -X POST
+curl 'http://ashtonc-test-gdb-flask-service:5000/data' -X POST
 ```
 
 ```
@@ -96,7 +134,7 @@ Data successfully posted
 This retrieves all data from the Redis database and returns it in JSON form. Since the data set is large, it is not recommended to get the data directly, but to pipe it into a file.
 
 ```bash
-curl 'http://localhost:5000/data' -X GET > out.json
+curl 'http://ashtonc-test-gdb-flask-service:5000/data' -X GET > out.json
 head out.json
 ```
 
@@ -118,7 +156,7 @@ head out.json
 This clears the Redis database.
 
 ```bash
-curl 'http://localhost:5000/data' -X DELETE
+curl 'http://ashtonc-test-gdb-flask-service:5000/data' -X DELETE
 ```
 
 ```
@@ -130,7 +168,7 @@ Data successfully deleted
 This returns a list of all of the `hgnc_id`'s for each entry in the data set, in JSON form. Since it is unique, this can be considered a primary key for the data set.
 
 ```bash
-curl 'http://localhost:5000/genes' -X GET > out.json
+curl 'http://ashtonc-test-gdb-flask-service:5000/genes' -X GET > out.json
 head out.json
 ```
 
@@ -152,7 +190,7 @@ head out.json
 This returns the data for the entry specified by `hgnc_id` in JSON form. If the data set is empty, the gene doesn't exist, or the inputs are poorly formed, it will return a string message with a 404 status code.
 
 ```bash
-curl 'http://localhost:5000/genes/HGNC:35163' -X GET
+curl 'http://ashtonc-test-gdb-flask-service:5000/genes/HGNC:35163' -X GET
 ```
 
 ```json
