@@ -1,0 +1,16 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+        name: ashtonc-test-gdb-flask-service
+        labels:
+                username: ashtonc
+                env: test
+spec:
+        type: ClusterIP
+        selector:
+                app: ashtonc-test-gdb-flask-app
+        ports:
+                - name: ashtonc-test-gdb-flask-service-port
+                  port: 5000
+                  targetPort: 5000

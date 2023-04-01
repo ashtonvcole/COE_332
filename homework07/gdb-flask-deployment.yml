@@ -23,4 +23,4 @@ spec:
                                 - name: ashtonc-test-gdb-flask-container
                                   image: ashtonvcole/genome_database:hw07
                                   imagePullPolicy: Always
-                                  command: []
+                                  command: ['python3', 'genome_database.py']
