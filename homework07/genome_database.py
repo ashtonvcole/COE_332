@@ -20,7 +20,7 @@ def get_redis_client():
     via 127.0.0.1:6379. The object specifically manipulates database 0. It is
     set to decode responses from the client from bytes to Python strings.
     """
-    return redis.Redis(host = 'redis-db', port = 6379, db = 0, decode_responses = True)
+    return redis.Redis(host = 'ashtonc-test-gdb-rd-app', port = 6379, db = 0, decode_responses = True)
 
 
 
