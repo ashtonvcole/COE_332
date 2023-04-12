@@ -1,0 +1,33 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+        name: ashtonc-test-gdb-rd-deployment
+        labels:
+                username: ashtonc
+                env: test
+                app: ashtonc-test-gdb-rd-app
+spec:
+        replicas: 1
+        selector:
+                matchLabels:
+                        app: ashtonc-test-gdb-rd-app
+        template:
+                metadata:
+                        labels:
+                                username: ashtonc
+                                env: test
+                                app: ashtonc-test-gdb-rd-app
+                spec:
+                        containers:
+                                - name: ashtonc-test-gdb-rd-container
+                                  image: redis:7
+                                  imagePullPolicy: Always
+                                  command: []
+                                  volumeMounts:
+                                          - name: ashtonc-test-gdb-rd-volume
+                                            mountPath: '/data'
+                        volumes:
+                                - name: ashtonc-test-gdb-rd-volume
+                                  persistentVolumeClaim:
+                                          claimName: ashtonc-test-gdb-rd-pvc

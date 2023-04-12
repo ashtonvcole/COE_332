@@ -1,0 +1,29 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+        name: ashtonc-test-gdb-flask-deployment
+        labels:
+                username: ashtonc
+                env: test
+                app: ashtonc-test-gdb-flask-app
+spec:
+        replicas: 2
+        selector:
+                matchLabels:
+                        app: ashtonc-test-gdb-flask-app
+        template:
+                metadata:
+                        labels:
+                                username: ashtonc
+                                env: test
+                                app: ashtonc-test-gdb-flask-app
+                spec:
+                        containers:
+                                - name: ashtonc-test-gdb-flask-container
+                                  image: ashtonvcole/genome_database:hw07
+                                  imagePullPolicy: Always
+                                  command: ['python3', 'genome_database.py']
+                                  env:
+                                          - name: REDIS_IP
+                                            value: ashtonc-test-gdb-rd-service
