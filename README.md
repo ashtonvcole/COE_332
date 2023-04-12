@@ -10,3 +10,4 @@ This is where I keep homework assignments from COE 332: Software Engineering and
 - [homework04](homework04) a live ISS data retriever which demonstrates running a locally hosted Flask API microservice as an intermediary to access and process 3rd-party data
 - [homework05](homework05) an extension upon the prior, with support for creating a Docker image
 - [homework06](homework06) a simple intermediary API for a genetic database demonstrating all of the above, while adding Redis and volume mounting for persistent data
+- [homework07](homework07) an extension upon the prior into Kubernetes, with more sophisticated and robust orchestration 
