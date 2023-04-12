@@ -1,7 +1,8 @@
 import redis
 import requests
-from flask import Flask, request
+from flask import Flask, request, send_file
 import os
+import matplotlib.pyplot as plt
 
 
 
@@ -14,7 +15,7 @@ source_url = 'https://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/json/hgnc_compl
 
 
 
-def get_redis_client():
+def get_redis_client(the_db: int = 0, the_decode: bool = False):
     """Returns the Redis database client.
 
     This function returns a Redis object permitting access to a Redis client
@@ -24,7 +25,7 @@ def get_redis_client():
     redis_host = os.environ.get('REDIS_IP')
     if not redis_host:
         raise Exception()
-    return redis.Redis(host = redis_host, port = 6379, db = 0, decode_responses = True)
+    return redis.Redis(host = redis_host, port = 6379, db = the_db, decode_responses = the_decode)
 
 
 
@@ -148,7 +149,60 @@ def genes_gene_id(hgnc_id: str):
 
 
 
-rd = get_redis_client()
+@app.route('/image', methods = ['POST', 'GET', 'DELETE'])
+def image():
+    """/image endpoint @TODO
+    """
+    global rd, rd2
+    if request.method == 'GET':
+        try:
+            image_data = rd2.get('image')
+            if image_data is None:
+                return f'ERROR: Image not found.', 404
+            file_path = './temp_get.png'
+            with open(file_path, 'wb') as the_file:
+                the_file.write(image_data)
+            return send_file(file_path, mimetype = 'image/png', as_attachment = True)
+        except Exception as e:
+            print(f'ERROR: unable to get data\n{e}')
+            return f'ERROR: unable to get data', 500
+    elif request.method == 'POST':
+        try:
+            file_path = './temp_post.png'
+            the_labels = ['N/A']
+            values = [0]
+            for key in rd.keys():
+                gene_group = rd.hget(key, 'gene_group')
+                if gene_group is None:
+                    values[0] = values[0] + 1
+                elif gene_group in the_labels:
+                    values[the_labels.index(gene_group)] = values[the_labels.index(gene_group)] + 1
+                else:
+                    the_labels.append(gene_group)
+                    values.append(1)
+            fig, ax = plt.subplots()
+            ax.pie(values, labels = the_labels) 
+            plt.savefig(file_path)
+            image_data = open(file_path, 'rb').read()
+            rd2.set('image', image_data)
+            return 'Data successfully posted', 200
+        except Exception as e:
+            print(f'ERROR: unable to post data\n{e}')
+            return f'ERROR: unable to post data', 500
+    elif request.method == 'DELETE':
+        try:
+            rd2.flushdb()
+            return 'Data successfully deleted', 200
+        except Exception as e:
+            print(f'ERROR: unable to delete data\n{e}')
+            return f'ERROR: unable to delete data', 500
+
+
+
+
+
+rd = get_redis_client(0, True)
+rd2 = get_redis_client(1, False)
 
 if __name__ == '__main__':
     app.run(host = '0.0.0.0', debug = True)
