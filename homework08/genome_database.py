@@ -151,7 +151,24 @@ def genes_gene_id(hgnc_id: str):
 
 @app.route('/image', methods = ['POST', 'GET', 'DELETE'])
 def image():
-    """/image endpoint @TODO
+    """/image endpoint
+    
+    This function either returns a plot image, generates the image, or clears
+    the image from memory, depending on if the HTTP request method is GET, POST,
+    or DELETE, respectively.
+
+    Args:
+        None
+
+    Returns:
+        If the method is GET, a PNG image. If there is an error, a descriptive
+            string will be returned with a 500 status code.
+        If the method is SET, a text message informing the user of success. If
+            there is an error, a descriptive string will be returned with a 500
+            status code.
+        If the method is DELETE, a text message informing the user of success.
+            If there is an error, a descriptive string will be returned with a
+            500 status code.
     """
     global rd, rd2
     if request.method == 'GET':
@@ -164,8 +181,8 @@ def image():
                 the_file.write(image_data)
             return send_file(file_path, mimetype = 'image/png', as_attachment = True)
         except Exception as e:
-            print(f'ERROR: unable to get data\n{e}')
-            return f'ERROR: unable to get data', 500
+            print(f'ERROR: unable to get image\n{e}')
+            return f'ERROR: unable to get image', 500
     elif request.method == 'POST':
         try:
             file_path = './temp_post.png'
@@ -191,17 +208,17 @@ def image():
             plt.savefig(file_path)
             image_data = open(file_path, 'rb').read()
             rd2.set('image', image_data)
-            return 'Data successfully posted', 200
+            return 'Image successfully posted', 200
         except Exception as e:
-            print(f'ERROR: unable to post data\n{e}')
-            return f'ERROR: unable to post data', 500
+            print(f'ERROR: unable to post image\n{e}')
+            return f'ERROR: unable to post image', 500
     elif request.method == 'DELETE':
         try:
             rd2.flushdb()
-            return 'Data successfully deleted', 200
+            return 'Image successfully deleted', 200
         except Exception as e:
-            print(f'ERROR: unable to delete data\n{e}')
-            return f'ERROR: unable to delete data', 500
+            print(f'ERROR: unable to delete image\n{e}')
+            return f'ERROR: unable to delete image', 500
 
 
 
