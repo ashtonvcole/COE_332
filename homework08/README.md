@@ -1,12 +1,39 @@
-# Human Genome API, now with Kubernetes!
+# Human Genome API, now with Plotting!
 
 This project creates a simple, containerized, Kubernetes-deployed Flask API to process HTTP requests for human genome data. [More details](https://www.genenames.org/download/archive/) and the [source data](https://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/json/hgnc_complete_set.json) can be found via the HUGO Gene Nomenclature Committee website. The application pulls the data from the web and stores it in a Kubernetes/Docker-containerized Redis database for queries, which is periodically saved to a persistent volume claim via a volume mount. This means that application data persists even if the application is stopped or, in the worst case, crashes.
 
-This assignment is important because it synthesizes several software engineering concepts. Extending beyond all of the value in the previous assignment, it uses Kubernetes to orchestrate the deployment of containers. Unlike before, there can be deployments of multiple copies of a container which tag-team to accommodate high request loads. If a container fails or is deleted, the deployment quickly replaces it with a new one, optionally with the most up-to-date image. Finally, the data itself is put into its own persistent volume claim to further containerize it.
+This assignment is important because it synthesizes several software engineering concepts. See previous assignments for details. This extends upon the prior by dynamically specifying the Redis client ID with an environment variable. This means that it is seamless to run the application just with Docker or in a Kubernetes cluster. The appropriate IP reference is placed in `docker-compose.yml` and `gdb-flask-deployment.yml`, respectively.
 
 ## Running the Project
 
-It is recommended to run the project from images pulled from [Docker Hub](https://hub.docker.com/repository/docker/ashtonvcole/genome_database/). The user is also welcome to build their own images. For alternative, non-Kubernetes methods, see [Homework 6](../homework06).
+It is recommended to run the project from images pulled from [Docker Hub](https://hub.docker.com/repository/docker/ashtonvcole/genome_database/). The user is also welcome to build their own images.
+
+### Running in a Non-Containerized Environment
+
+See [Homework 06](../homework06) for only setting up a Redis container, and running your Flask application directly on your machine. Either set an evinronment variable `REDIS_IP` to `127.0.0.1`, or hard-code the change into `genome_database.py` in the function `get_redis_client()`.
+
+### Running with Docker
+
+Be sure to either build an image of the application or pull it from Docker Hub. Match the name to `ashtonvcole/genome_database:hw08`, or rename the image in `docker-compose.yaml`. The user should check that the volume mount specification is set appropriately.
+
+```yml
+volumes:
+    - ./data:/data
+```
+
+The first path should correspond to a user-created directory relative to the YAML file. With that, the images can be deployed as containers with a single line.
+
+```bash
+docker-compose up -d
+```
+
+The `-d`  tag runs these tasks in the background. If there is a Dockerfile and application source file in the directory, the container will be re-built with this command. Curl requests can then be made to the Flask application via `localhost:5000`. Once you are done running the containers, you may stop and remove them with another one-liner.
+
+```bash
+docker-compose down
+```
+
+### Running with Kubernetes
 
 Regardless of how the images are obtained, they can be implemented with a single command.
 
@@ -67,6 +94,7 @@ kubectl delete pvc ashtonc-test-gdb-rd-pvc
 ## Project Structure
 
 - `Dockerfile` [About](#dockerfile) [File](Dockerfile)
+- `docker-compose.yml` [About](#docker-composeyml) [File](docker-compose.yml)
 - `genome_database.py` [About](#genome_databasepy) [File](genome_database.py)
 - `gdb-rd-pvc.yml` [About](#gdb-rd-pvcyml) [File](gdb-rd-pvc.yml)
 - `gdb-rd-deployment.yml` [About](#gdb-rd-deploymentyml) [File](gdb-rd-deployment.yml)
@@ -78,6 +106,10 @@ kubectl delete pvc ashtonc-test-gdb-rd-pvc
 ### `Dockerfile`
 
 This script is used to build a Docker image, which can excecute the program within a container.
+
+### `docker-compose.yml`
+
+This file configures all of the necessary settings to construct and run Docker containers for the application using `docker-compose`.
 
 ### `genome_database.py`
 
@@ -114,6 +146,7 @@ The following endpoints are available to the user. Note that all endpoints, give
 - [`/data`](#data)
 - [`/genes`](#genes)
 - [`/genes/hgnc_id`](#geneshgnc_id)
+- [`/image`](#image)
 
 ### `/data`
 
@@ -227,4 +260,38 @@ curl 'http://ashtonc-test-gdb-flask-service:5000/genes/HGNC:35163' -X GET
   "uuid": "24bb4cfb-01e7-4fdd-966b-3d5e1776d2c6",
   "vega_id": "OTTHUMG00000150313"
 }
+```
+
+### `/image`
+
+#### `POST`
+
+This generates a plot and stores it within the Redis database.
+
+```bash
+curl 'http://ashtonc-test-gdb-flask-service:5000/data' -X POST
+```
+
+```
+Image successfully posted
+```
+
+#### `GET`
+
+This accesses a plot from the Redis database and returns it to the user.
+
+```bash
+curl 'http://ashtonc-test-gdb-flask-service:5000/data' -X GET > image.png
+```
+
+#### `DELETE`
+
+This removes the plot from the Redis database.
+
+```bash
+curl 'http://ashtonc-test-gdb-flask-service:5000/data' -X DELETE
+```
+
+```
+Image successfully deleted
 ```
