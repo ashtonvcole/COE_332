@@ -183,10 +183,11 @@ def image():
             # Remove trivial labels for legibility
             s = sum(values)
             for ii in range(0, len(values)):
-                if values[ii] / s < 0.05:
+                if values[ii] / s < 0.03:
                     the_labels[ii] = ''
             fig, ax = plt.subplots()
-            ax.pie(values, labels = the_labels) 
+            ax.pie(values, labels = the_labels)
+            plt.title('Common Gene Groups')
             plt.savefig(file_path)
             image_data = open(file_path, 'rb').read()
             rd2.set('image', image_data)
