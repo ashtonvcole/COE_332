@@ -269,7 +269,7 @@ curl 'http://ashtonc-test-gdb-flask-service:5000/genes/HGNC:35163' -X GET
 This generates a plot and stores it within the Redis database.
 
 ```bash
-curl 'http://ashtonc-test-gdb-flask-service:5000/data' -X POST
+curl 'http://ashtonc-test-gdb-flask-service:5000/image' -X POST
 ```
 
 ```
@@ -281,7 +281,7 @@ Image successfully posted
 This accesses a plot from the Redis database and returns it to the user.
 
 ```bash
-curl 'http://ashtonc-test-gdb-flask-service:5000/data' -X GET > image.png
+curl 'http://ashtonc-test-gdb-flask-service:5000/image' -X GET > image.png
 ```
 
 #### `DELETE`
@@ -289,7 +289,7 @@ curl 'http://ashtonc-test-gdb-flask-service:5000/data' -X GET > image.png
 This removes the plot from the Redis database.
 
 ```bash
-curl 'http://ashtonc-test-gdb-flask-service:5000/data' -X DELETE
+curl 'http://ashtonc-test-gdb-flask-service:5000/image' -X DELETE
 ```
 
 ```
