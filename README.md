@@ -11,3 +11,4 @@ This is where I keep homework assignments from COE 332: Software Engineering and
 - [homework05](homework05) an extension upon the prior, with support for creating a Docker image
 - [homework06](homework06) a simple intermediary API for a genetic database demonstrating all of the above, while adding Redis and volume mounting for persistent data
 - [homework07](homework07) an extension upon the prior into Kubernetes, with more sophisticated and robust orchestration 
+- [homework08](homework08) an extension upon the prior, with an image plotting route and dynamic Redis IP specification
