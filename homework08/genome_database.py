@@ -183,7 +183,7 @@ def image():
             # Remove trivial labels for legibility
             s = sum(values)
             for ii in range(0, len(values)):
-                if values[ii] / s < 0.1:
+                if values[ii] / s < 0.05:
                     the_labels[ii] = ''
             fig, ax = plt.subplots()
             ax.pie(values, labels = the_labels) 
