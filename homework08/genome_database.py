@@ -180,6 +180,11 @@ def image():
                 else:
                     the_labels.append(gene_group)
                     values.append(1)
+            # Remove trivial labels for legibility
+            s = sum(values)
+            for ii in range(0, len(values)):
+                if values[ii] / s < 0.1:
+                    the_labels[ii] = ''
             fig, ax = plt.subplots()
             ax.pie(values, labels = the_labels) 
             plt.savefig(file_path)
